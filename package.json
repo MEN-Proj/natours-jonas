@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "serve": "nodemon server.js"
+    "serve": "nodemon server.js",
+    "import:data": "node import-dev-data.js --import",
+    "delete:data": "node import-dev-data.js --delete"
   },
   "dependencies": {
     "dotenv": "^16.0.0",
