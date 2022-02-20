@@ -28,7 +28,22 @@ exports.getAllTours = async (req, res) => {
     query = query.select('-__v');
   }
 
+  // pagination
+  const page = +req.query.page || 1;
+  const limit = +req.query.limit || 100;
+  const skip = (page - 1) * limit;
+
+  console.log(typeof page);
+
   try {
+    if (req?.query?.page) {
+      const totalDocuments = await Tour.estimatedDocumentCount();
+      if (skip >= totalDocuments) {
+        throw new Error('This page does not exist');
+      }
+    }
+
+    query = query.skip(skip).limit(limit);
     // execute query
     const tours = await query.exec();
     // response
@@ -40,7 +55,7 @@ exports.getAllTours = async (req, res) => {
       },
     });
   } catch (e) {
-    res.status(500).json(e);
+    res.status(500).json({ status: 'fail', error: e.message });
   }
 };
 
