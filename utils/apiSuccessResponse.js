@@ -1,4 +1,5 @@
-const { StatusCodes } = require('http-status-codes');
+const { StatusCodes } = require('./statusCodes');
+
 exports.successResponse = (res, data, statusCode = null) => {
   let status = { status: 'success' };
 
@@ -6,7 +7,7 @@ exports.successResponse = (res, data, statusCode = null) => {
     status = { ...status, results: data.length };
   }
 
-  return res.status(statusCode ? statusCode : StatusCodes.OK).json({
+  return res.status(statusCode ? statusCode : StatusCodes.SUCCESS).json({
     ...status,
     data,
   });
