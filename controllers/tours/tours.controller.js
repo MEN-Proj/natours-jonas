@@ -72,11 +72,7 @@ exports.deleteTour = async (req, res, next) => {
     );
   }
 
-  return successResponse(
-    res,
-    { data: 'Tour deleted successfully' },
-    StatusCodes.DELETED,
-  );
+  return successResponse(res, { msg: 'Tour deleted successfully' });
 };
 
 exports.getTourStats = async (req, res, next) => {
