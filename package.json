@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "serve": "nodemon server.js",
+    "start": "cross-env NODE_ENV=production nodemon server.js",
+    "serve": "cross-env NODE_ENV=development nodemon server.js",
     "dbug": "ndb server.js",
     "import:data": "node import-dev-data.js --import",
     "delete:data": "node import-dev-data.js --delete"
@@ -14,7 +15,8 @@
     "express": "^4.17.3",
     "express-async-errors": "^3.1.1",
     "mongoose": "^6.2.2",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "cross-env": "^7.0.3"
   },
   "devDependencies": {
     "eslint": "^8.9.0",
