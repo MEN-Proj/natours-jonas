@@ -1,4 +1,5 @@
 const express = require('express');
+require('express-async-errors');
 const morgan = require('morgan');
 const { tourRouter } = require('./routes/tours/tour.routes');
 const { userRouter } = require('./routes/users/user.routes');
