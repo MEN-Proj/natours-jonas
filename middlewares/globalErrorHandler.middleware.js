@@ -12,6 +12,13 @@ const handleDuplicateFieldsDB = (err) => {
   return new AppError(message, StatusCodes.BAD_REQUEST);
 };
 
+const handleValidationErrorDB = (err) => {
+  const errors = Object.values(err.errors).map((el) => el.message);
+
+  const message = `Invalid input data. ${errors.join('. ')}`;
+  return new AppError(message, StatusCodes.BAD_REQUEST);
+};
+
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
     status: err.status,
@@ -38,6 +45,7 @@ const sendErrorProd = (err, res) => {
     res.status(500).json({
       status: 'error',
       message: 'Something went very wrong!',
+      error: err,
     });
   }
 };
@@ -50,10 +58,14 @@ exports.globalErrorHandler = (err, req, res, next) => {
     sendErrorDev(err, res);
   } else if (process.env.NODE_ENV === 'production') {
     let error = { ...JSON.parse(JSON.stringify(err)) };
-    // console.log(error);
+    console.log(error);
 
     if (error.name === 'CastError') {
       error = handleCastErrorDB(error);
+    }
+
+    if (error.name === 'ValidationError') {
+      error = handleValidationErrorDB(error);
     }
 
     if (error.code === 11000) {
