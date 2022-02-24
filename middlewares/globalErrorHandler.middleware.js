@@ -1,8 +1,14 @@
 const { AppError } = require('../utils/AppError');
 const { StatusCodes } = require('../utils/statusCodes');
+const { log } = require('nodemon/lib/utils');
 
 const handleCastErrorDB = (err) => {
   const message = `Invalid ${err.path}: ${err.value}.`;
+  return new AppError(message, StatusCodes.BAD_REQUEST);
+};
+
+const handleDuplicateFieldsDB = (err) => {
+  const message = `Duplicate field value: ${err.keyValue.name}. Please use another value!`;
   return new AppError(message, StatusCodes.BAD_REQUEST);
 };
 
@@ -44,9 +50,15 @@ exports.globalErrorHandler = (err, req, res, next) => {
     sendErrorDev(err, res);
   } else if (process.env.NODE_ENV === 'production') {
     let error = { ...JSON.parse(JSON.stringify(err)) };
-    console.log({ error });
+    // console.log(error);
 
-    error = error.name === 'CastError' && handleCastErrorDB(error);
+    if (error.name === 'CastError') {
+      error = handleCastErrorDB(error);
+    }
+
+    if (error.code === 11000) {
+      error = handleDuplicateFieldsDB(error);
+    }
 
     sendErrorProd(error, res);
   }
