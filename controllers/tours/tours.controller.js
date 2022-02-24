@@ -1,6 +1,8 @@
 const { Tour } = require('../../models/tour/tour.model');
+const { StatusCodes } = require('http-status-codes');
 const { APIFeatures } = require('../../utils/APIFeatures');
 const { AppError } = require('../../utils/AppError');
+const { successResponse } = require('../../utils/apiSuccessResponse');
 
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
@@ -19,13 +21,7 @@ exports.getAllTours = async (req, res, next) => {
   // execute query
   const tours = await features.query.exec();
   // response
-  res.status(200).json({
-    status: 'success',
-    results: tours.length,
-    data: {
-      tours,
-    },
-  });
+  return successResponse(res, tours);
 };
 
 exports.getTour = async (req, res, next) => {
@@ -37,31 +33,26 @@ exports.getTour = async (req, res, next) => {
     return next(new AppError('Tour not found', 400));
   }
 
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour,
-    },
-  });
+  successResponse(res, tour);
 };
 
 exports.createTour = async (req, res, next) => {
   const tour = await Tour.create(req.body);
-  res.status(201).json({
-    status: 'success',
-    data: {
-      tour,
-    },
-  });
+
+  return successResponse(res, tour, StatusCodes.CREATED);
 };
 
 exports.updateTour = async (req, res, next) => {
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour: '<Updated tour here...>',
-    },
+  const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
   });
+
+  if (!tour) {
+    return next(new AppError('No tour found with that ID', 404));
+  }
+
+  return successResponse(res, tour);
 };
 
 exports.deleteTour = async (req, res, next) => {
@@ -91,13 +82,7 @@ exports.getTourStats = async (req, res, next) => {
   // execute query
   const tours = await query.exec();
   // response
-  res.status(200).json({
-    status: 'success',
-    results: tours.length,
-    data: {
-      tours,
-    },
-  });
+  return successResponse(res, tours);
 };
 
 exports.getMonthlyPlan = async (req, res, next) => {
@@ -130,11 +115,6 @@ exports.getMonthlyPlan = async (req, res, next) => {
   ]);
 
   const tours = await query.exec();
-  res.status(200).json({
-    status: 'success',
-    results: tours.length,
-    data: {
-      tours,
-    },
-  });
+
+  return successResponse(res, tours);
 };
