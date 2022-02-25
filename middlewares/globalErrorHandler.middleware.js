@@ -1,6 +1,5 @@
 const { AppError } = require('../utils/AppError');
 const { StatusCodes } = require('../utils/statusCodes');
-const { log } = require('nodemon/lib/utils');
 
 const handleCastErrorDB = (err) => {
   const message = `Invalid ${err.path}: ${err.value}.`;
@@ -45,7 +44,6 @@ const sendErrorProd = (err, res) => {
     res.status(500).json({
       status: 'error',
       message: 'Something went very wrong!',
-      error: err,
     });
   }
 };
