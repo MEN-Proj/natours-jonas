@@ -11,12 +11,13 @@
     "delete:data": "node import-dev-data.js --delete"
   },
   "dependencies": {
+    "cross-env": "^7.0.3",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
     "express-async-errors": "^3.1.1",
     "mongoose": "^6.2.2",
     "morgan": "^1.10.0",
-    "cross-env": "^7.0.3"
+    "validator": "^13.7.0"
   },
   "devDependencies": {
     "eslint": "^8.9.0",
