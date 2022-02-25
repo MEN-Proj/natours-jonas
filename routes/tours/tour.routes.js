@@ -9,12 +9,15 @@ const {
   getTourStats,
   getMonthlyPlan,
 } = require('../../controllers/tours/tours.controller');
+const { authMiddleware } = require('../../middlewares/auth.middleware');
 
 const tourRouter = express.Router();
 
 tourRouter.route('/').get(getAllTours).post(createTour);
 
-tourRouter.route('/top-5-tours').get(aliasTopTours, getAllTours);
+tourRouter
+  .route('/top-5-tours')
+  .get(aliasTopTours, authMiddleware, getAllTours);
 tourRouter.route('/monthly-plan/:year').get(getMonthlyPlan);
 
 tourRouter.route('/tour-stats').get(getTourStats);

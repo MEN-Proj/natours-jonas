@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { User } = require('../../models/tour/user.model');
+const { User } = require('../../models/user/user.model');
 const { successResponse } = require('../../utils/apiSuccessResponse');
 const { AppError } = require('../../utils/AppError');
 const { StatusCodes } = require('../../utils/statusCodes');

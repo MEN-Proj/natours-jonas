@@ -7,13 +7,9 @@ if (process.env.NODE_ENV !== 'production') {
   dbURI = process.env.DB_URI.replace('<password>', process.env.DB_PASSWORD);
 }
 
+dbURI = process.env.DB_URI_LOCAL;
+
 exports.dbConnect = async () => {
-  const con = await mongoose.connect(dbURI);
+  await mongoose.connect(dbURI);
   console.log('Database connection successful');
-  // try {
-  //   const con = await mongoose.connect(dbURI);
-  //   console.log('Database connection successful');
-  // } catch (error) {
-  //   console.log(error);
-  // }
 };
