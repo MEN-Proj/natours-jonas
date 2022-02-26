@@ -1,8 +1,10 @@
 const { AppError } = require('../utils/AppError');
 const { StatusCodes } = require('../utils/statusCodes');
+const mongoose = require('mongoose');
+const { instance } = require('eslint-plugin-react/lib/util/lifecycleMethods');
 
 const handleCastErrorDB = (err) => {
-  const message = `Invalid ${err.path}: ${err.value}.`;
+  const message = `Invalid ${err.path}: ${err.value}`;
   return new AppError(message, StatusCodes.BAD_REQUEST);
 };
 
@@ -28,12 +30,17 @@ const handleJWTExpiredError = () =>
   );
 
 const sendErrorDev = (err, res) => {
-  res.status(err.statusCode).json({
-    status: err.status,
-    message: err.message,
-    error: err,
-    stack: err.stack,
-  });
+  if (err.isOperational) {
+    res.status(err.statusCode).json({
+      status: err.status,
+      message: err.message,
+      error: err,
+      stack: err.stack,
+    });
+  } else {
+    res.json({ msg: 'not a isOperational error.', err });
+    console.log(err);
+  }
 };
 
 const sendErrorProd = (err, res) => {
@@ -64,29 +71,32 @@ exports.globalErrorHandler = (err, req, res, next) => {
   if (process.env.NODE_ENV === 'development') {
     sendErrorDev(err, res);
   } else if (process.env.NODE_ENV === 'production') {
-    let error = { ...JSON.parse(JSON.stringify(err)) };
-    console.log(error);
+    let error = null;
+    // console.log(err.name);
 
-    if (error.name === 'CastError') {
-      error = handleCastErrorDB(error);
+    if (err instanceof mongoose.Error.CastError || err.name === 'CastError') {
+      error = handleCastErrorDB(err);
     }
 
-    if (error.name === 'ValidationError') {
-      error = handleValidationErrorDB(error);
+    if (
+      err instanceof mongoose.Error.ValidationError ||
+      err.name === 'ValidationError'
+    ) {
+      error = handleValidationErrorDB(err);
     }
 
-    if (error.code === 11000) {
-      error = handleDuplicateFieldsDB(error);
+    if (err.name === 'MongoServerError' && err.code === 11000) {
+      error = handleDuplicateFieldsDB(err);
     }
 
-    if (error.name === 'JsonWebTokenError') {
-      error = handleJWTError(error);
+    if (err.name === 'JsonWebTokenError') {
+      error = handleJWTError(err);
     }
 
-    if (error.name === 'TokenExpiredError') {
-      error = handleJWTExpiredError(error);
+    if (err.name === 'TokenExpiredError') {
+      error = handleJWTExpiredError(err);
     }
 
-    sendErrorProd(error, res);
+    error ? sendErrorProd(error, res) : sendErrorProd(err, res);
   }
 };

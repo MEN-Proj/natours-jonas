@@ -9,7 +9,10 @@ const {
   getTourStats,
   getMonthlyPlan,
 } = require('../../controllers/tours/tours.controller');
-const { authMiddleware } = require('../../middlewares/auth.middleware');
+const {
+  authMiddleware,
+  restrictTo,
+} = require('../../middlewares/auth.middleware');
 
 const tourRouter = express.Router();
 
@@ -22,6 +25,10 @@ tourRouter.route('/monthly-plan/:year').get(getMonthlyPlan);
 
 tourRouter.route('/tour-stats').get(getTourStats);
 
-tourRouter.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
+tourRouter
+  .route('/:id')
+  .get(getTour)
+  .patch(updateTour)
+  .delete(authMiddleware, restrictTo('admin', 'lead-guide'), deleteTour);
 
 module.exports = { tourRouter };
