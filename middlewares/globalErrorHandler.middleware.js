@@ -1,7 +1,6 @@
+const mongoose = require('mongoose');
 const { AppError } = require('../utils/AppError');
 const { StatusCodes } = require('../utils/statusCodes');
-const mongoose = require('mongoose');
-const { instance } = require('eslint-plugin-react/lib/util/lifecycleMethods');
 
 const handleCastErrorDB = (err) => {
   const message = `Invalid ${err.path}: ${err.value}`;
@@ -90,11 +89,11 @@ exports.globalErrorHandler = (err, req, res, next) => {
     }
 
     if (err.name === 'JsonWebTokenError') {
-      error = handleJWTError(err);
+      error = handleJWTError();
     }
 
     if (err.name === 'TokenExpiredError') {
-      error = handleJWTExpiredError(err);
+      error = handleJWTExpiredError();
     }
 
     error ? sendErrorProd(error, res) : sendErrorProd(err, res);

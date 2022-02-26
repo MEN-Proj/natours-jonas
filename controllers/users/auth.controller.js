@@ -59,3 +59,22 @@ exports.signIn = async (req, res, next) => {
   user.password = undefined;
   successResponse(res, { user, token });
 };
+
+exports.forgotPassword = async (req, res, next) => {
+  // 1) Get user based on POSTed email
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    return next(
+      new AppError(
+        'There is no user with email address.',
+        StatusCodes.NOT_FOUND,
+      ),
+    );
+  }
+
+  // 2) Generate the random reset token
+  const resetToken = user.createPasswordResetToken();
+  await user.save({ validateBeforeSave: false });
+
+  successResponse(res, { resetToken });
+};

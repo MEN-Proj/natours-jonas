@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const crypto = require('crypto');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 
@@ -64,6 +65,7 @@ userSchema.method({
   isPasswordCorrect: async function (candidatePassword, userPassword) {
     return await bcrypt.compare(candidatePassword, userPassword);
   },
+
   changedPasswordAfter: function (JWTTimestamp) {
     if (this.passwordChangedAt) {
       const changedTimestamp = parseInt(
@@ -76,6 +78,25 @@ userSchema.method({
 
     // False means NOT changed
     return false;
+  },
+
+  createPasswordResetToken: function () {
+    // Generate token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    // Hash token and set to resetPasswordToken field
+    this.passwordResetToken = crypto
+      .createHash('sha256')
+      .update(resetToken)
+      .digest('hex');
+
+    console.log(
+      { resetToken },
+      { passwordResetToken: this.passwordResetToken },
+    );
+
+    this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+    return resetToken;
   },
 });
 
