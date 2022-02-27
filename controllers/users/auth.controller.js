@@ -16,6 +16,15 @@ const signToken = (id) => {
   );
 };
 
+const createSendToken = (res, user, statusCode = 200) => {
+  const token = signToken(user._id);
+  user.password = undefined;
+  user.__v = undefined;
+
+  // createSendToken(newUser, 201, res);
+  successResponse(res, { user, token }, statusCode);
+};
+
 exports.signUp = async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
@@ -24,12 +33,7 @@ exports.signUp = async (req, res, next) => {
     passwordConfirm: req.body.passwordConfirm,
   });
 
-  const token = signToken(newUser._id);
-  newUser.password = undefined;
-  newUser.__v = undefined;
-
-  // createSendToken(newUser, 201, res);
-  successResponse(res, { newUser, token }, 201);
+  return createSendToken(res, newUser, StatusCodes.CREATED);
 };
 
 exports.signIn = async (req, res, next) => {
@@ -54,11 +58,7 @@ exports.signIn = async (req, res, next) => {
     );
   }
 
-  const token = signToken(user._id);
-
-  // 3) If everything ok, send token to client
-  user.password = undefined;
-  successResponse(res, { user, token });
+  return createSendToken(res, user);
 };
 
 exports.forgotPassword = async (req, res, next) => {
@@ -142,10 +142,30 @@ exports.resetToken = async (req, res, next) => {
 
   // 3) Update changedPasswordAt property for the user
   // 4) Log the user in, send JWT
-  const token = signToken(user._id);
-  user.password = undefined;
-  user.__v = undefined;
+  return createSendToken(res, user);
+};
 
-  // createSendToken(newUser, 201, res);
-  successResponse(res, { user, token }, StatusCodes.CREATED);
+exports.updatePassword = async (req, res, next) => {
+  const { currentPassword, password, passwordConfirm } = req?.body;
+  // 1) Get user from collection
+  const user = await User.findById(req.user.id).select('+password');
+
+  // 2) Check if POSTed current password is correct
+  if (
+    !user ||
+    !(await user.isPasswordCorrect(currentPassword, user.password))
+  ) {
+    return next(
+      new AppError('Your current password is wrong.', StatusCodes.UNAUTHORIZED),
+    );
+  }
+
+  // 3) If so, update password
+  user.password = password;
+  user.passwordConfirm = passwordConfirm;
+  await user.save();
+  // User.findByIdAndUpdate will NOT work as intended!
+
+  // 4) Log user in, send JWT
+  return createSendToken(res, user);
 };
