@@ -61,6 +61,16 @@ userSchema.pre('save', async function (next) {
   this.passwordConfirm = undefined;
 });
 
+userSchema.pre('save', function (next) {
+  // if password is not modified or document is newly created then skip this middleware
+  if (!this.isModified('password') || this.isNew) {
+    return next();
+  }
+
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+
 userSchema.method({
   isPasswordCorrect: async function (candidatePassword, userPassword) {
     return await bcrypt.compare(candidatePassword, userPassword);
