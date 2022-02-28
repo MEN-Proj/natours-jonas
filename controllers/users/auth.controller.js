@@ -145,7 +145,7 @@ exports.resetToken = async (req, res, next) => {
   return createSendToken(res, user);
 };
 
-exports.updatePassword = async (req, res, next) => {
+exports.updateMyPassword = async (req, res, next) => {
   const { currentPassword, password, passwordConfirm } = req?.body;
   // 1) Get user from collection
   const user = await User.findById(req.user.id).select('+password');
