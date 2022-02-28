@@ -3,12 +3,6 @@ const { AppError } = require('../../utils/AppError');
 const { StatusCodes } = require('../../utils/statusCodes');
 const { successResponse } = require('../../utils/apiSuccessResponse');
 const { User } = require('../../models/user/user.model');
-exports.getAllUsers = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yet defined!',
-  });
-};
 
 function filterObj(obj, fieldsToFilter) {
   const newObj = {};
@@ -19,6 +13,12 @@ function filterObj(obj, fieldsToFilter) {
   });
   return newObj;
 }
+
+exports.getAllUsers = async (req, res, next) => {
+  const users = await User.find();
+
+  successResponse(res, users);
+};
 
 exports.updateMe = async (req, res, next) => {
   const { password, passwordConfirm } = req.body;
@@ -42,6 +42,14 @@ exports.updateMe = async (req, res, next) => {
   });
 
   return successResponse(res, updateUser);
+};
+
+exports.deleteMe = async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, {
+    active: false,
+  });
+
+  return successResponse(res, { msg: 'User deleted successfully' });
 };
 
 // Get user by id

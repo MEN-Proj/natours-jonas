@@ -71,6 +71,12 @@ userSchema.pre('save', function (next) {
   next();
 });
 
+userSchema.pre(/^find/, function (next) {
+  // here this points to current query
+  this.find({ active: { $eq: true } }).select('-__v');
+  next();
+});
+
 userSchema.method({
   isPasswordCorrect: async function (candidatePassword, userPassword) {
     return await bcrypt.compare(candidatePassword, userPassword);
