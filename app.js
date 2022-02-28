@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
+const hpp = require('hpp');
 const morgan = require('morgan');
 
 const { tourRouter } = require('./routes/tours/tour.routes');
@@ -45,6 +46,20 @@ app.use(mongoSanitize());
 
 // Data sanitization against XSS attack
 app.use(xss());
+
+// Prevent parameter pollution
+app.use(
+  hpp({
+    whitelist: [
+      'duration',
+      'ratingsQuantity',
+      'ratingsAverage',
+      'maxGroupSize',
+      'difficulty',
+      'price',
+    ],
+  }),
+);
 
 // serving static files
 app.use(express.static(path.join(__dirname, 'public')));
