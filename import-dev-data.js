@@ -6,7 +6,7 @@ const { Tour } = require('./models/tour/tour.model');
 dbConnect();
 
 const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`, 'utf-8'),
+  fs.readFileSync(`${__dirname}/dev-data/data/tours.json`, 'utf-8'),
 );
 
 async function importData() {
