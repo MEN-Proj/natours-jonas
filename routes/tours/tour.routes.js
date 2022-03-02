@@ -13,8 +13,11 @@ const {
   authMiddleware,
   restrictTo,
 } = require('../../middlewares/auth.middleware');
+const { reviewRouter } = require('../review/review.routes');
 
 const tourRouter = express.Router();
+
+tourRouter.use('/:tourId/reviews', reviewRouter);
 
 tourRouter.route('/').get(getAllTours).post(createTour);
 

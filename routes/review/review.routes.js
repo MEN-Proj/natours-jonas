@@ -8,11 +8,13 @@ const {
   restrictTo,
 } = require('../../middlewares/auth.middleware');
 
-const reviewRouter = express.Router();
+const reviewRouter = express.Router({ mergeParams: true });
+
+reviewRouter.use(authMiddleware);
 
 reviewRouter
   .route('/')
   .get(getAllReviews)
-  .post(authMiddleware, restrictTo('user'), createReview);
+  .post(restrictTo('user'), createReview);
 
 module.exports = { reviewRouter };
