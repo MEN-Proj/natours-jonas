@@ -7,7 +7,7 @@
     "start": "cross-env NODE_ENV=production nodemon server.js",
     "serve": "cross-env NODE_ENV=development nodemon server.js",
     "dbug": "ndb server.js",
-    "import:data": "node import-dev-data.js --import",
+    "import:data": "node import-dev-data.js --import --user",
     "delete:data": "node import-dev-data.js --delete"
   },
   "dependencies": {

@@ -27,7 +27,7 @@ exports.getAllTours = async (req, res, next) => {
 exports.getTour = async (req, res, next) => {
   const id = req?.params?.id;
 
-  const tour = await Tour.findById(id);
+  const tour = await Tour.findById(id).populate('guide');
 
   if (!tour) {
     return next(

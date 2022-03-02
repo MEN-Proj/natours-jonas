@@ -2,15 +2,20 @@ require('dotenv').config();
 const fs = require('fs');
 const { dbConnect } = require('./config/dbconfig');
 const { Tour } = require('./models/tour/tour.model');
+const { User } = require('./models/user/user.model');
 
 dbConnect();
 
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours.json`, 'utf-8'),
 );
+const users = JSON.parse(
+  fs.readFileSync(`${__dirname}/dev-data/data/users.json`, 'utf-8'),
+);
 
 async function importData() {
   try {
+    await User.create(users);
     await Tour.create(tours);
     console.log('Data imported successfully');
     process.exit();
@@ -21,6 +26,7 @@ async function importData() {
 
 async function deleteData() {
   try {
+    await User.deleteMany();
     await Tour.deleteMany();
     console.log('Data deleted successfully');
     process.exit();
@@ -29,7 +35,7 @@ async function deleteData() {
   }
 }
 
-console.log(process.argv[2]);
+console.log(process.argv);
 
 const flag = process.argv[2].split('--')[1];
 
