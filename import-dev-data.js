@@ -3,6 +3,7 @@ const fs = require('fs');
 const { dbConnect } = require('./config/dbconfig');
 const { Tour } = require('./models/tour/tour.model');
 const { User } = require('./models/user/user.model');
+const { Review } = require('./models/review/review.model');
 
 dbConnect();
 
@@ -12,11 +13,15 @@ const tours = JSON.parse(
 const users = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/users.json`, 'utf-8'),
 );
+const reviews = JSON.parse(
+  fs.readFileSync(`${__dirname}/dev-data/data/reviews.json`, 'utf-8'),
+);
 
 async function importData() {
   try {
     await User.create(users);
     await Tour.create(tours);
+    await Review.create(reviews);
     console.log('Data imported successfully');
     process.exit();
   } catch (e) {
