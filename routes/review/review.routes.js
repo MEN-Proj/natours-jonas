@@ -2,6 +2,7 @@ const express = require('express');
 const {
   getAllReviews,
   createReview,
+  deleteReview,
 } = require('../../controllers/reivew/review.controller');
 const {
   authMiddleware,
@@ -16,5 +17,7 @@ reviewRouter
   .route('/')
   .get(getAllReviews)
   .post(restrictTo('user'), createReview);
+
+reviewRouter.route('/:id').delete(deleteReview);
 
 module.exports = { reviewRouter };

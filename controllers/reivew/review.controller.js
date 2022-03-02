@@ -1,5 +1,6 @@
 const { Review } = require('../../models/review/review.model');
 const { successResponse } = require('../../utils/apiSuccessResponse');
+const { deleteOne } = require('../factory-controllers/handlerFactory');
 
 exports.getAllReviews = async (req, res, next) => {
   const filter = req.params.tourId ? { tour: req.params.tourId } : {};
@@ -24,3 +25,5 @@ exports.createReview = async (req, res, next) => {
 
   successResponse(res, newReview, 201);
 };
+
+exports.deleteReview = deleteOne(Review);

@@ -3,6 +3,7 @@ const { AppError } = require('../../utils/AppError');
 const { StatusCodes } = require('../../utils/statusCodes');
 const { successResponse } = require('../../utils/apiSuccessResponse');
 const { User } = require('../../models/user/user.model');
+const { deleteOne } = require('../factory-controllers/handlerFactory');
 
 function filterObj(obj, fieldsToFilter) {
   const newObj = {};
@@ -80,9 +81,4 @@ exports.updateUser = (req, res) => {
 };
 
 // Delete User
-exports.deleteUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yet defined!',
-  });
-};
+exports.deleteUser = deleteOne(User);
