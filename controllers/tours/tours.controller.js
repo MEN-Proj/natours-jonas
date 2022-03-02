@@ -27,7 +27,9 @@ exports.getAllTours = async (req, res, next) => {
 exports.getTour = async (req, res, next) => {
   const id = req?.params?.id;
 
-  const tour = await Tour.findById(id).populate('guide');
+  const tour = await Tour.findById(id).populate({
+    path: 'reviews',
+  });
 
   if (!tour) {
     return next(

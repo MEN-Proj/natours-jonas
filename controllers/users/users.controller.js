@@ -53,11 +53,14 @@ exports.deleteMe = async (req, res, next) => {
 };
 
 // Get user by id
-exports.getUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yet defined!',
-  });
+exports.getUser = async (req, res, next) => {
+  const user = await User.findById(req.params.id);
+
+  if (!user) {
+    return next(new AppError('User not found', 404));
+  }
+
+  successResponse(res, user);
 };
 
 // Create User
