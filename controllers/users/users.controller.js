@@ -6,6 +6,8 @@ const { User } = require('../../models/user/user.model');
 const {
   deleteOne,
   updateOne,
+  getOne,
+  getAll,
 } = require('../factory-controllers/handlerFactory');
 
 function filterObj(obj, fieldsToFilter) {
@@ -17,12 +19,6 @@ function filterObj(obj, fieldsToFilter) {
   });
   return newObj;
 }
-
-exports.getAllUsers = async (req, res, next) => {
-  const users = await User.find();
-
-  successResponse(res, users);
-};
 
 exports.updateMe = async (req, res, next) => {
   const { password, passwordConfirm } = req.body;
@@ -56,27 +52,15 @@ exports.deleteMe = async (req, res, next) => {
   return successResponse(res, { msg: 'User deleted successfully' });
 };
 
-// Get user by id
-exports.getUser = async (req, res, next) => {
-  const user = await User.findById(req.params.id);
-
-  if (!user) {
-    return next(new AppError('User not found', 404));
-  }
-
-  successResponse(res, user);
-};
-
 // Create User
 exports.createUser = (req, res) => {
   res.status(500).json({
     status: 'error',
-    message: 'This route is not yet defined!',
+    message: 'This route is not defined! Please use /signup instead',
   });
 };
 
-// Update User
+exports.getAllUsers = getAll(User);
+exports.getUser = getOne(User);
 exports.updateUser = updateOne(User);
-
-// Delete User
 exports.deleteUser = deleteOne(User);

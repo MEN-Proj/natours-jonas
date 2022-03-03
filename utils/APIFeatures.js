@@ -1,30 +1,26 @@
 class APIFeatures {
-  constructor(model, queryStr) {
-    this.query = model.find();
-    this.model = model;
-    this.queryStr = queryStr;
+  constructor(query, queryString) {
+    this.query = query;
+    this.queryString = queryString;
   }
 
-  // filtering
   filter() {
-    const queryObj = { ...this.queryStr };
+    const queryObj = { ...this.queryString };
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
     excludedFields.forEach((el) => delete queryObj[el]);
 
-    //advanced filtering
+    // 1B) Advanced filtering
     let queryStr = JSON.stringify(queryObj);
-    queryStr = queryStr.replace(/\b(gt|gte|lte|lt)\b/g, (match) => `$${match}`);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
 
-    // create query
-    this.query = this.model.find(JSON.parse(queryStr));
+    this.query = this.query.find(JSON.parse(queryStr));
 
     return this;
   }
 
-  // sort
   sort() {
-    if (this.queryStr.sort) {
-      const sortBy = this.queryStr.sort.split(',').join(' ');
+    if (this.queryString.sort) {
+      const sortBy = this.queryString.sort.split(',').join(' ');
       this.query = this.query.sort(sortBy);
     } else {
       this.query = this.query.sort('-createdAt');
@@ -33,10 +29,9 @@ class APIFeatures {
     return this;
   }
 
-  // limit
-  limit() {
-    if (this.queryStr.fields) {
-      const fields = this.queryStr.fields.split(',').join(' ');
+  limitFields() {
+    if (this.queryString.fields) {
+      const fields = this.queryString.fields.split(',').join(' ');
       this.query = this.query.select(fields);
     } else {
       this.query = this.query.select('-__v');
@@ -45,11 +40,11 @@ class APIFeatures {
     return this;
   }
 
-  // paginatation
   paginate() {
-    const page = +this.queryStr.page || 1;
-    const limit = +this.queryStr.limit || 100;
+    const page = this.queryString.page * 1 || 1;
+    const limit = this.queryString.limit * 1 || 100;
     const skip = (page - 1) * limit;
+
     this.query = this.query.skip(skip).limit(limit);
 
     return this;
