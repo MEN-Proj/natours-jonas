@@ -1,6 +1,10 @@
 const { Review } = require('../../models/review/review.model');
 const { successResponse } = require('../../utils/apiSuccessResponse');
-const { deleteOne } = require('../factory-controllers/handlerFactory');
+const {
+  deleteOne,
+  updateOne,
+  createOne,
+} = require('../factory-controllers/handlerFactory');
 
 exports.getAllReviews = async (req, res, next) => {
   const filter = req.params.tourId ? { tour: req.params.tourId } : {};
@@ -10,20 +14,7 @@ exports.getAllReviews = async (req, res, next) => {
   successResponse(res, reviews);
 };
 
-exports.createReview = async (req, res, next) => {
-  if (!req.body.tour) req.body.tour = req.params.tourId;
-  if (!req.body.user) req.body.user = req.user._id;
+exports.createReview = createOne(Review);
 
-  const { review, rating, tour, user } = req.body;
-
-  const newReview = await Review.create({
-    review,
-    rating,
-    tour,
-    user,
-  });
-
-  successResponse(res, newReview, 201);
-};
-
+exports.updateReview = updateOne(Review);
 exports.deleteReview = deleteOne(Review);
